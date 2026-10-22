@@ -1,14 +1,122 @@
-* {
+:root {
+  color-scheme: light;
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-2: #f8f9fb;
+  --border: #e1e5ea;
+  --border-strong: #c9d0d8;
+  --text: #1b2430;
+  --muted: #566475;
+  --faint: #768394;
+  --accent: #2c5f8a;
+  --accent-soft: #a9c4dc;
+  --accent-bg: #e9f0f6;
+  --ok: #2b7a57;
+  --warn: #a55a12;
+  --danger: #b0413c;
+  --danger-bg: #fbeceb;
+  --warn-bg: #fbf1e3;
+  --ok-bg: #e7f3ed;
+  --grid: #e8ebef;
+  --s1: #2c5f8a;
+  --s2: #d1752b;
+  --s3: #3b8c86;
+  --s4: #8a7d22;
+  --s5: #b4505a;
+  --focus: #2c5f8a;
+  --radius: 6px;
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0f141a;
+    --surface: #151b23;
+    --surface-2: #1a212a;
+    --border: #262f3a;
+    --border-strong: #38444f;
+    --text: #e3e8ee;
+    --muted: #9aa7b5;
+    --faint: #7f8c9a;
+    --accent: #6aa3d4;
+    --accent-soft: #3a5f80;
+    --accent-bg: #1a2a38;
+    --ok: #5cba90;
+    --warn: #e0a05a;
+    --danger: #e27f78;
+    --danger-bg: #2d1a1a;
+    --warn-bg: #2b2217;
+    --ok-bg: #182a22;
+    --grid: #222b35;
+    --s1: #6aa3d4;
+    --s2: #e08e4a;
+    --s3: #55b3ac;
+    --s4: #c4b44a;
+    --s5: #d9808a;
+    --focus: #6aa3d4;
+  }
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html,
-body,
-#root {
-  min-height: 100%;
-  margin: 0;
+html {
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-width: 320px;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.45 var(--font);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+h2 { font-size: 14px; font-weight: 600; }
+h3 { font-size: 13px; font-weight: 600; }
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+button, input, select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+table { border-collapse: collapse; width: 100%; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

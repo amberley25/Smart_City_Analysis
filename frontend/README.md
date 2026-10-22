@@ -1,16 +1,41 @@
-# React + Vite
+# Smart City dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React 19 + Vite single-page app for the Smart City Analytics API. Charts use Recharts, icons come from lucide-react, and
+there is no other runtime dependency. Light and dark themes follow the operating system setting.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```bash
+npm install
+npm run dev        # http://localhost:5173, proxies /api to http://127.0.0.1:5000
+npm run lint
+npm run build      # production bundle in dist/
+npm run preview    # serve the bundle, same /api proxy
+```
 
-## React Compiler
+Start the API first (`make serve` or `smartcity serve` from the repository root). If the API is down the dashboard shows
+an error banner with the command to run.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Configuration
 
-## Expanding the Oxlint configuration
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `VITE_API_BASE` | Absolute API origin baked in at build time, for deployments where the API is on another host | empty (same origin, `/api/v1`) |
+| `VITE_PROXY_TARGET` | Target of the dev/preview `/api` proxy | `http://127.0.0.1:5000` |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Structure
+
+```
+src/
+  api.js            fetch client, ApiError, one function per endpoint
+  hooks/            useApi (abort + loading/error), useHashRoute, useZone
+  lib/              formatting, measure metadata, series helpers, chart theme
+  components/       Shell, UI primitives, chart wrappers, SeriesExplorer
+  pages/            Overview, Energy, Environment, Mobility, Models
+    energy/         forecast tool, reading check, anomaly table, request log
+    models/         forecast and anomaly evaluation panels
+  styles/           layout, component and page CSS (tokens live in index.css)
+```
+
+Routes are hash based (`#/overview`, `#/energy`, `#/environment`, `#/mobility`, `#/models`), so the built app can be
+served from any static host. The zone selector in the top bar is shared by every page.
