@@ -3,12 +3,7 @@ from pathlib import Path
 
 DATASET_DIR = Path(__file__).parent.parent / "dataset"
 
-files = [
-    "air_quality_sensors.csv",
-    "energy_grid.csv",
-    "traffic_sensors.csv",
-    "weather_station.csv"
-]
+files = ["air_quality_sensors.csv", "energy_grid.csv", "traffic_sensors.csv", "weather_station.csv"]
 
 for filename in files:
     file_path = DATASET_DIR / filename
@@ -17,7 +12,7 @@ for filename in files:
     print(f"DATASET: {filename}")
     print("=" * 50)
 
-    with open(file_path, "r", newline="", encoding="utf-8-sig") as file:
+    with open(file_path, newline="", encoding="utf-8-sig") as file:
         reader = csv.DictReader(file)
         rows = list(reader)
 
@@ -29,9 +24,7 @@ for filename in files:
 
         for column in reader.fieldnames:
             missing = sum(
-                1 for row in rows
-                if not row[column].strip()
-                or row[column].strip().lower() in ("nan", "null", "none")
+                1 for row in rows if not row[column].strip() or row[column].strip().lower() in ("nan", "null", "none")
             )
             print(f"  {column}: {missing}")
 

@@ -1,0 +1,20 @@
+services:
+  api:
+    build: .
+    volumes:
+      - smartcity-var:/app/var
+    environment:
+      SMARTCITY_CORS_ORIGINS: http://localhost:8080
+    restart: unless-stopped
+
+  web:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  smartcity-var:

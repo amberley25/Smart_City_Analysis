@@ -9,18 +9,12 @@ def get_connection():
     return sqlite3.connect(DB_PATH)
 
 
-def save_energy_result(
-    voltage,
-    current,
-    power_factor,
-    energy_usage=None,
-    predicted_energy=None,
-    is_anomaly=None
-):
+def save_energy_result(voltage, current, power_factor, energy_usage=None, predicted_energy=None, is_anomaly=None):
     conn = get_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         INSERT INTO energy_readings (
             voltage,
             current,
@@ -30,14 +24,9 @@ def save_energy_result(
             is_anomaly
         )
         VALUES (?, ?, ?, ?, ?, ?)
-    """, (
-        voltage,
-        current,
-        power_factor,
-        energy_usage,
-        predicted_energy,
-        is_anomaly
-    ))
+    """,
+        (voltage, current, power_factor, energy_usage, predicted_energy, is_anomaly),
+    )
 
     conn.commit()
     record_id = cursor.lastrowid

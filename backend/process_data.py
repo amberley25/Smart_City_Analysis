@@ -3,7 +3,6 @@ from pathlib import Path
 from data_loader import load_all_data
 from preprocessing import run_preprocessing_pipeline
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 PROCESSED_DIR = BASE_DIR / "dataset" / "processed"
 

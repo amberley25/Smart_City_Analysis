@@ -5,10 +5,7 @@ def preprocess_timestamp(df):
     """Convert timestamps to datetime and sort the data."""
     df = df.copy()
 
-    df["timestamp"] = pd.to_datetime(
-        df["timestamp"],
-        errors="coerce"
-    )
+    df["timestamp"] = pd.to_datetime(df["timestamp"], errors="coerce")
 
     # Remove rows with invalid timestamps
     df = df.dropna(subset=["timestamp"])
@@ -17,26 +14,21 @@ def preprocess_timestamp(df):
     df = df.sort_values("timestamp").reset_index(drop=True)
 
     return df
+
+
 def clean_numeric(df):
     """Convert sensor measurement columns to numeric values."""
     df = df.copy()
 
     # Columns that contain descriptive information
-    excluded_columns = [
-        "timestamp",
-        "device_id",
-        "location",
-        "status"
-    ]
+    excluded_columns = ["timestamp", "device_id", "location", "status"]
 
     for column in df.columns:
         if column not in excluded_columns:
-            df[column] = pd.to_numeric(
-                df[column],
-                errors="coerce"
-            )
+            df[column] = pd.to_numeric(df[column], errors="coerce")
 
     return df
+
 
 def preprocess_dataset(df):
     """Apply all basic preprocessing steps to a dataset."""
@@ -45,6 +37,7 @@ def preprocess_dataset(df):
 
     return df
 
+
 def preprocess_all(datasets):
     """Preprocess all sensor datasets."""
     processed_data = {}
@@ -52,12 +45,10 @@ def preprocess_all(datasets):
     for name, df in datasets.items():
         processed_data[name] = preprocess_dataset(df)
 
-        print(
-            f"{name}: "
-            f"{len(processed_data[name])} rows processed"
-        )
+        print(f"{name}: {len(processed_data[name])} rows processed")
 
     return processed_data
+
 
 def handle_missing_values(df):
     """Fill missing numeric values while preserving missingness information."""
@@ -75,6 +66,7 @@ def handle_missing_values(df):
             df[column] = df[column].fillna(median_value)
 
     return df
+
 
 def run_preprocessing_pipeline(datasets):
     """Preprocess and clean all sensor datasets."""

@@ -1,14 +1,11 @@
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
-
 from pathlib import Path
-from data_loader import load_all_data
-from preprocessing import (
-    run_preprocessing_pipeline,
-    preprocess_dataset
-)
 
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from data_loader import load_all_data
+from preprocessing import preprocess_dataset, run_preprocessing_pipeline
 
 # Output directory
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,7 +75,6 @@ def plot_sensor_status(datasets):
 # 4. Correlation analysis
 def analyze_correlations(datasets):
     for name, original_df in datasets.items():
-
         # Convert timestamps and numeric columns
         # without filling missing values
         df = preprocess_dataset(original_df)
@@ -88,11 +84,7 @@ def analyze_correlations(datasets):
 
         # Exclude missing-value indicators
         numeric_df = numeric_df.drop(
-            columns=[
-                col for col in numeric_df.columns
-                if col.endswith("_was_missing")
-            ],
-            errors="ignore"
+            columns=[col for col in numeric_df.columns if col.endswith("_was_missing")], errors="ignore"
         )
 
         if len(numeric_df.columns) < 2:
@@ -103,25 +95,14 @@ def analyze_correlations(datasets):
         correlation = numeric_df.corr()
 
         # Save correlation values
-        correlation.to_csv(
-            EDA_DIR / f"{name}_correlation.csv"
-        )
+        correlation.to_csv(EDA_DIR / f"{name}_correlation.csv")
 
         # Generate heatmap
         plt.figure(figsize=(8, 6))
 
-        sns.heatmap(
-            correlation,
-            annot=True,
-            cmap="coolwarm",
-            fmt=".2f",
-            vmin=-1,
-            vmax=1
-        )
+        sns.heatmap(correlation, annot=True, cmap="coolwarm", fmt=".2f", vmin=-1, vmax=1)
 
-        plt.title(
-            f"{name.replace('_', ' ').title()} Correlation"
-        )
+        plt.title(f"{name.replace('_', ' ').title()} Correlation")
         plt.tight_layout()
 
         filename = f"{name}_correlation.png"
@@ -146,32 +127,14 @@ def main():
         analyze_dataset(name, df)
 
     # Distribution plots
-    plot_distribution(
-        processed_data["air_quality"],
-        "pm25",
-        "Air Quality: PM2.5 Distribution",
-        "air_quality_pm25.png"
-    )
+    plot_distribution(processed_data["air_quality"], "pm25", "Air Quality: PM2.5 Distribution", "air_quality_pm25.png")
+
+    plot_distribution(processed_data["energy"], "energy_usage", "Energy Usage Distribution", "energy_usage.png")
+
+    plot_distribution(processed_data["traffic"], "traffic_count", "Traffic Count Distribution", "traffic_count.png")
 
     plot_distribution(
-        processed_data["energy"],
-        "energy_usage",
-        "Energy Usage Distribution",
-        "energy_usage.png"
-    )
-
-    plot_distribution(
-        processed_data["traffic"],
-        "traffic_count",
-        "Traffic Count Distribution",
-        "traffic_count.png"
-    )
-
-    plot_distribution(
-        processed_data["weather"],
-        "temperature",
-        "Weather: Temperature Distribution",
-        "weather_temperature.png"
+        processed_data["weather"], "temperature", "Weather: Temperature Distribution", "weather_temperature.png"
     )
 
     # Sensor status comparison

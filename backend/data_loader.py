@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import pandas as pd
 
 # Project paths
@@ -10,16 +11,14 @@ DATASET_FILES = {
     "air_quality": "air_quality_sensors.csv",
     "energy": "energy_grid.csv",
     "traffic": "traffic_sensors.csv",
-    "weather": "weather_station.csv"
+    "weather": "weather_station.csv",
 }
 
 
 def load_csv(file_path):
     """Load a CSV file and return a DataFrame."""
     if not file_path.exists():
-        raise FileNotFoundError(
-            f"Dataset not found: {file_path}"
-        )
+        raise FileNotFoundError(f"Dataset not found: {file_path}")
 
     return pd.read_csv(file_path)
 
@@ -32,11 +31,7 @@ def load_all_data():
         file_path = DATASET_DIR / filename
         datasets[name] = load_csv(file_path)
 
-        print(
-            f"Loaded {name}: "
-            f"{datasets[name].shape[0]} rows, "
-            f"{datasets[name].shape[1]} columns"
-        )
+        print(f"Loaded {name}: {datasets[name].shape[0]} rows, {datasets[name].shape[1]} columns")
 
     return datasets
 

@@ -1,6 +1,7 @@
+from pathlib import Path
+
 import joblib
 import pandas as pd
-from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,10 +14,7 @@ model = joblib.load(MODEL_PATH)
 # Load a valid example record
 df = pd.read_csv(DATA_PATH)
 
-sample = df[
-    (df["status"] == "OK") &
-    (df["energy_usage"].notna())
-].iloc[[0]]
+sample = df[(df["status"] == "OK") & (df["energy_usage"].notna())].iloc[[0]]
 
 features = ["voltage", "current", "power_factor"]
 
