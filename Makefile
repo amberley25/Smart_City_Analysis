@@ -24,8 +24,9 @@ train: ## Ingest data into SQLite, train models, write metrics and figures
 
 setup: train ## Everything needed before serving (uses the committed dataset)
 
-test: ## Run the backend test suite
+test: ## Run backend and frontend tests
 	$(BIN)/pytest
+	cd frontend && npm test
 
 lint: ## Lint and format-check backend and frontend
 	$(BIN)/ruff check backend tests

@@ -165,10 +165,15 @@ def evaluate(train: pd.DataFrame, test: pd.DataFrame, test_truth: pd.Series, tes
             np.abs(f_train["profile_z"].fillna(0).to_numpy()),
             np.abs(f_test["profile_z"].fillna(0).to_numpy()),
         ),
+        # Ablation: the same learned detector with the deterministic voltage rule switched off.
+        "Isolation forest (no voltage rule)": (
+            forest_score(forest, f_train[FEATURES]),
+            forest_score(forest, f_test[FEATURES]),
+        ),
     }
 
     y = test_truth.to_numpy().astype(int)
-    results, curves, primary = [], {}, None
+    results, curves, primary, flags = [], {}, None, {}
     for name, (train_score, test_score) in methods.items():
         threshold = float(np.quantile(train_score, 1 - ALERT_RATE))
         flagged = test_score >= threshold
@@ -193,15 +198,22 @@ def evaluate(train: pd.DataFrame, test: pd.DataFrame, test_truth: pd.Series, tes
             }
         )
         curves[name] = {"roc": _curve_points(fpr, tpr), "pr": _curve_points(rec, prec)}
+        flags[name] = flagged
         if primary is None:
             primary = (flagged, test_score, threshold)
 
     flagged = primary[0]
+    ablated = flags["Isolation forest (no voltage rule)"]
     per_type = []
     for kind in ["spike", "outage", "meter_fault", "voltage_sag"]:
         mask = (test_type == kind).to_numpy()
         per_type.append(
-            {"type": kind, "count": int(mask.sum()), "recall": float(flagged[mask].mean()) if mask.any() else None}
+            {
+                "type": kind,
+                "count": int(mask.sum()),
+                "recall": float(flagged[mask].mean()) if mask.any() else None,
+                "recall_without_rule": float(ablated[mask].mean()) if mask.any() else None,
+            }
         )
 
     return {

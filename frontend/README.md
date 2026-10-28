@@ -9,6 +9,7 @@ there is no other runtime dependency. Light and dark themes follow the operating
 npm install
 npm run dev        # http://localhost:5173, proxies /api to http://127.0.0.1:5000
 npm run lint
+npm test           # vitest: formatting, API client, data hook, form flow
 npm run build      # production bundle in dist/
 npm run preview    # serve the bundle, same /api proxy
 ```

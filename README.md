@@ -107,13 +107,14 @@ immediately. Details: [docs/DATA.md](docs/DATA.md).
 ## Development
 
 ```bash
-make test        # 69 backend tests, about 15 seconds
+make test        # backend (pytest) and frontend (vitest) tests
 make lint        # ruff (backend) and oxlint (frontend)
 make format
 ```
 
 The tests cover the simulator's physical invariants, feature leakage, model quality gates, the full API
-contract with its error cases, and database idempotence. CI runs them on Python 3.11 to 3.13, builds the
+contract with its error cases and security controls, database idempotence, and the dashboard's API client,
+data hook and a form flow. CI runs them on Python 3.11 to 3.13, builds the
 dashboard, and smoke-tests the trained API end to end.
 
 ## Project layout

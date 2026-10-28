@@ -4,11 +4,12 @@ import { Panel } from "../../components/ui.jsx";
 import { AXIS } from "../../lib/chartTheme.js";
 import { num, percent } from "../../lib/format.js";
 
-const COLORS = ["var(--s1)", "var(--s2)", "var(--s4)"];
+const COLORS = ["var(--s1)", "var(--s2)", "var(--s4)", "var(--s3)"];
 const SHORT = {
   "Isolation forest (engineered features)": "Isolation forest, engineered features",
   "Isolation forest (raw readings)": "Isolation forest, raw readings",
   "Robust z-score (energy only)": "Robust z-score, energy only",
+  "Isolation forest (no voltage rule)": "Isolation forest, no voltage rule (ablation)",
 };
 
 export function MethodTable({ anomaly }) {
@@ -111,6 +112,10 @@ export function Confusion({ anomaly }) {
 
 export function RecallByType({ anomaly }) {
   const label = (t) => t.replace("_", " ");
+  const sag = anomaly.per_type.find((t) => t.type === "voltage_sag");
+  const ruleGain = sag && sag.recall_without_rule != null && sag.recall > sag.recall_without_rule
+    ? { alone: sag.recall_without_rule, full: sag.recall }
+    : null;
   return (
     <Panel title="Detection rate by fault type" subtitle="Share of injected fault hours that were flagged.">
       <div className="bars">
@@ -124,6 +129,7 @@ export function RecallByType({ anomaly }) {
       </div>
       <p className="muted" style={{ marginTop: 14, fontSize: 12 }}>
         Mild demand spikes close to normal variation are the hardest to separate; outages and metering faults are the easiest.
+        {ruleGain && ` A fixed grid-limit voltage rule lifts voltage-sag recall from ${percent(ruleGain.alone * 100, 0)} (learned detector alone) to ${percent(ruleGain.full * 100, 0)}.`}
       </p>
     </Panel>
   );

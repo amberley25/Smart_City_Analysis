@@ -172,7 +172,10 @@ def run(settings: Settings) -> dict:
                 for row in anomaly_result["results"]
             ],
             "curves": anomaly_result["curves"],
-            "per_type": [{**r, "recall": _round(r["recall"])} for r in anomaly_result["per_type"]],
+            "per_type": [
+                {**r, "recall": _round(r["recall"]), "recall_without_rule": _round(r["recall_without_rule"])}
+                for r in anomaly_result["per_type"]
+            ],
             "alert_rate": anomaly_result["alert_rate"],
             "holdout_rows": anomaly_result["n_test"],
             "holdout_anomalies": anomaly_result["n_positive"],

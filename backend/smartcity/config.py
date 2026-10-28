@@ -8,6 +8,7 @@ from pathlib import Path
 
 ZONES = ["Downtown", "Industrial", "Residential", "Harbor", "University"]
 DOMAINS = ("energy", "traffic", "air_quality", "weather")
+DEFAULT_CORS = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080"
 
 
 def _default_home() -> Path:
@@ -24,7 +25,10 @@ class Settings:
     model_dir: Path | None = None
     report_dir: Path | None = None
     figure_dir: Path | None = None
-    cors_origins: str = field(default_factory=lambda: os.environ.get("SMARTCITY_CORS_ORIGINS", "*"))
+    cors_origins: str = field(default_factory=lambda: os.environ.get("SMARTCITY_CORS_ORIGINS", DEFAULT_CORS))
+    api_key: str | None = field(default_factory=lambda: os.environ.get("SMARTCITY_API_KEY") or None)
+    rate_limit_per_minute: int = field(default_factory=lambda: int(os.environ.get("SMARTCITY_RATE_LIMIT", "60")))
+    trust_proxy: bool = field(default_factory=lambda: os.environ.get("SMARTCITY_TRUST_PROXY", "") == "1")
 
     def __post_init__(self) -> None:
         def resolve(value: Path | None, env: str, default: Path) -> Path:

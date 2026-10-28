@@ -9,4 +9,5 @@ export default defineConfig({
   plugins: [react()],
   server: { proxy: { "/api": target } },
   preview: { proxy: { "/api": target } },
+  test: { environment: "jsdom", setupFiles: ["./src/test/setup.js"] },
 });

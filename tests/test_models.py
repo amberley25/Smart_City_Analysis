@@ -65,3 +65,10 @@ def test_profile_stats_use_robust_statistics():
     stats = anomaly.ProfileStats.fit(frame)
     median, spread = stats.lookup(frame.iloc[[5]])
     assert median[0] == 100.0 and spread[0] > 0
+
+
+def test_voltage_rule_ablation_is_reported_and_helps_sags(metrics):
+    names = [m["name"] for m in metrics["anomaly"]["methods"]]
+    assert "Isolation forest (no voltage rule)" in names
+    sag = next(t for t in metrics["anomaly"]["per_type"] if t["type"] == "voltage_sag")
+    assert sag["recall"] >= sag["recall_without_rule"]

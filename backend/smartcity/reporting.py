@@ -214,11 +214,12 @@ def forecast_diagnostics(settings, metrics) -> Path:
 # Anomaly detection
 # ---------------------------------------------------------------------------
 
-METHOD_COLORS = {0: BLUE, 1: GREY, 2: ORANGE}
+METHOD_COLORS = {0: BLUE, 1: GREY, 2: ORANGE, 3: TEAL}
 SHORT = {
     "Isolation forest (engineered features)": "Isolation forest, engineered",
     "Isolation forest (raw readings)": "Isolation forest, raw readings",
     "Robust z-score (energy only)": "Robust z-score",
+    "Isolation forest (no voltage rule)": "Isolation forest, no voltage rule",
 }
 
 
@@ -292,7 +293,17 @@ def anomaly_detail(settings, metrics, artifacts) -> Path:
     ax = axes[1]
     types = block["per_type"]
     labels = [t["type"].replace("_", " ") for t in types]
-    bars = ax.barh(labels, [t["recall"] or 0 for t in types], color=BLUE, height=0.55)
+    y = np.arange(len(types))
+    ax.barh(
+        y + 0.19,
+        [t["recall_without_rule"] or 0 for t in types],
+        color=BLUE_SOFT,
+        height=0.34,
+        label="Learned detector alone",
+    )
+    bars = ax.barh(y - 0.19, [t["recall"] or 0 for t in types], color=BLUE, height=0.34, label="With voltage rule")
+    ax.set_yticks(y, labels)
+    ax.legend(loc="lower right", fontsize=7.5)
     ax.set_xlim(0, 1.22)
     for bar, t in zip(bars, types, strict=True):
         ax.text(

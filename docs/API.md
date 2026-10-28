@@ -14,7 +14,10 @@ Every error has the same shape.
 | Status | Meaning | Codes |
 |---|---|---|
 | 400 | Bad parameter or body | `invalid_zone`, `invalid_parameter`, `invalid_field`, `missing_field`, `invalid_body` |
+| 401 | Missing or wrong `X-API-Key` (only when `SMARTCITY_API_KEY` is set) | `unauthorized` |
 | 404 | Unknown route, domain or figure | `not_found`, `unknown_domain` |
+| 413 | Request body over 64 KB | `request_entity_too_large` |
+| 429 | Too many POST requests from one client | `rate_limited` |
 | 422 | Valid input the data cannot serve | `origin_out_of_range`, `insufficient_history`, `unknown_zone_profile` |
 | 503 | Not ready | `model_unavailable`, `metrics_unavailable`, `no_data` |
 | 500 | Unexpected (logged server-side) | `internal_error` |

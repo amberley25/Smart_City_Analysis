@@ -65,3 +65,29 @@ smartcity simulate --days 120 --seed 2026   # rewrites dataset/*.csv
 smartcity ingest                            # reload SQLite
 smartcity train                             # retrain, rewrite metrics and figures
 ```
+
+## Using real data
+
+The pipeline reads the same five CSVs whatever produced them, so real sensor exports can replace the
+simulated ones. What it requires:
+
+- **Schema.** The columns listed above, with ISO timestamps (`YYYY-MM-DD HH:MM:SS`), one row per zone and
+  hour per network. Missing readings should be empty cells; unhealthy sensors should carry
+  `status = DEGRADED` or `OFFLINE`.
+- **Hourly cadence.** Features such as the 24-hour and weekly lags assume one reading per hour. Resample
+  sub-hourly data before ingesting.
+- **At least about 6 weeks per zone.** One week is consumed by the weekly lag and 28 days are held out
+  for evaluation.
+- **Zone names.** The five zones are defined in `ZONES` in `backend/smartcity/config.py`. They drive the
+  one-hot features, API validation and the dashboard selector, so a different city needs that list (and
+  the matching list in `frontend/src/lib/measures.js`) updated. The `PROFILES` in `simulate.py` are used
+  only for simulation and can be ignored.
+- **Anomaly labels (not yet optional).** `smartcity train` scores the anomaly detector against
+  `energy_anomaly_labels.csv` and fails without positive examples. Running on real data that has no
+  ground truth needs a small change to skip that benchmark and the pages that display it; it has not been
+  built or tested.
+
+```bash
+cp my_energy.csv dataset/energy.csv   # and traffic, air_quality, weather
+smartcity ingest && smartcity train
+```

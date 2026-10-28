@@ -66,7 +66,11 @@ dataset is committed because it is the project's input and is small.
 ## Production notes
 
 - Run with `gunicorn "smartcity.api:create_app()"` (see `Dockerfile`), never the Flask development server.
-- The API has no authentication or rate limiting. Put it behind a gateway before exposing it.
-- Restrict `SMARTCITY_CORS_ORIGINS` to the dashboard's origin.
+- Set `SMARTCITY_API_KEY` to require an `X-API-Key` header on every endpoint except `/health`. POST
+  requests are limited per client address (`SMARTCITY_RATE_LIMIT`, default 60 per minute, 0 disables),
+  bodies are capped at 64 KB, and CORS defaults to the local dashboard origins. Behind a reverse proxy set
+  `SMARTCITY_TRUST_PROXY=1` so the limiter sees client addresses, not the proxy's. The limiter is
+  per-process, so with several workers the effective limit multiplies; use a gateway for strict quotas.
+- The dashboard does not send an API key. If you enable one, have the reverse proxy add the header.
 - For live data, replace the ingest step with a streaming writer into the same tables and schedule
   `smartcity train` for periodic retraining. The API reads the database and model files on each request.

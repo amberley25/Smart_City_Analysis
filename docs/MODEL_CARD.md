@@ -76,8 +76,16 @@ every method, so none is tuned against test labels.
 | **Isolation forest + voltage rule, engineered features** | **0.91** | **0.86** | **0.88** | **0.999** | **0.943** |
 | Isolation forest on raw readings (the original project's approach) | 0.50 | 0.36 | 0.42 | 0.832 | 0.355 |
 | Robust z-score on energy alone | 0.79 | 0.77 | 0.78 | 0.901 | 0.787 |
+| *Ablation: same isolation forest, voltage rule off* | 0.91 | 0.81 | 0.86 | 0.999 | 0.959 |
 
-Recall by fault type: outage 100% (n=15), voltage sag 100% (n=19), meter fault 81% (n=42), spike 64% (n=14).
+Recall by fault type, with the voltage rule and (in brackets) the learned detector alone:
+outage 100% (100%, n=15), voltage sag 100% (74%, n=19), meter fault 81% (83%, n=42), spike 64% (64%, n=14).
+
+**What the voltage rule is worth.** Switching it off drops sag recall from 100% to 74% and overall F1 from
+0.88 to 0.86, and ranking quality (ROC-AUC, PR-AUC) is unchanged or marginally better without it. The rule
+is a safety net for a failure operators must never miss, not the source of the detector's quality. It was
+added after a manual probe showed a 22% sag scoring below the alert threshold, so its benefit on this data
+is the upper end of what to expect; the 74% figure is the honest measure of the learned model alone.
 The weak spot is mild spikes: across all 79 spike-hours in the dataset, those it flagged averaged 1.8x typical demand and those it missed averaged 1.4x, which sits inside normal day-to-day variation.
 
 ![Benchmark](figures/anomaly_benchmark.png)

@@ -211,3 +211,48 @@ def test_missing_models_yield_503(tmp_path, settings):
     response = create_app(bare).test_client().post("/api/v1/energy/forecast", json={"zone": "Downtown"})
     assert response.status_code == 503
     assert response.get_json()["error"]["code"] == "model_unavailable"
+
+
+def _guarded(settings, **changes):
+    from dataclasses import replace
+
+    from smartcity.api import create_app
+
+    return create_app(replace(settings, **changes)).test_client()
+
+
+def test_api_key_is_enforced_when_configured(settings):
+    client = _guarded(settings, api_key="s3cret")
+    assert client.get("/api/v1/health").status_code == 200  # health stays open for probes
+    denied = client.get("/api/v1/zones")
+    assert denied.status_code == 401 and denied.get_json()["error"]["code"] == "unauthorized"
+    assert client.get("/api/v1/zones", headers={"X-API-Key": "wrong"}).status_code == 401
+    assert client.get("/api/v1/zones", headers={"X-API-Key": "s3cret"}).status_code == 200
+
+
+def test_api_is_open_without_a_key(client):
+    assert client.get("/api/v1/zones").status_code == 200
+
+
+def test_post_requests_are_rate_limited(settings):
+    client = _guarded(settings, rate_limit_per_minute=2)
+    body = {"zone": "Harbor"}
+    assert client.post("/api/v1/energy/forecast", json=body).status_code == 200
+    assert client.post("/api/v1/energy/forecast", json=body).status_code == 200
+    limited = client.post("/api/v1/energy/forecast", json=body)
+    assert limited.status_code == 429 and limited.get_json()["error"]["code"] == "rate_limited"
+    assert client.get("/api/v1/zones").status_code == 200  # reads are not limited
+
+
+def test_oversized_bodies_are_rejected(client):
+    response = client.post("/api/v1/energy/forecast", data="x" * 70_000, content_type="application/json")
+    assert response.status_code == 413
+    assert "error" in response.get_json()
+
+
+def test_security_headers_and_cors_default(client):
+    response = client.get("/api/v1/zones", headers={"Origin": "http://localhost:5173"})
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["Access-Control-Allow-Origin"] == "http://localhost:5173"
+    other = client.get("/api/v1/zones", headers={"Origin": "http://evil.example"})
+    assert "Access-Control-Allow-Origin" not in other.headers
